@@ -75,7 +75,7 @@ cmake ..
 make -j4
 # Produz: AudioSynth.uf2
 ---
-
+```
 ## 📜 Licença
 GNU GPL-3.0.
 
