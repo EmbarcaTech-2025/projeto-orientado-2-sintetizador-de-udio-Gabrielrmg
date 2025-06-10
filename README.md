@@ -23,9 +23,9 @@ reproduz em um buzzer via PWM. Durante ambos os modos, exibe um **VU-meter
 
 | Gravação (LED vermelho)         | Reprodução (LED verde)        |
 | :-----------------------------: | :---------------------------: |
-| ![Rec](imgs/rec.jpg)            | ![Play](imgs/play.jpg)        |
+| ![Rec](img/REC_vermelho.jpg)            | ![Play](img/PLAY_verde.jpg)        |
 
-> _Coloque suas próprias fotos em_ `projects/Audio_Synth/imgs/`.
+
 
 ---
 
