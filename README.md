@@ -85,8 +85,18 @@ mkdir build && cd build
 cmake ..
 make -j4
 # Produz: AudioSynth.uf2
----
 ```
+---
+
+## 🚀 Uso
+
+1. Ligue o Pico com o firmware.  
+2. No splash **“AUDIO SYNTH!”**, pressione **A** para gravar (LED vermelho).  
+3. Após 10 s, o LED apaga. Pressione **B** para reproduzir (LED verde).  
+4. Observe o VU-meter no OLED e escute o buzzer.  
+
+---
+
 ## 📜 Licença
 GNU GPL-3.0.
 
