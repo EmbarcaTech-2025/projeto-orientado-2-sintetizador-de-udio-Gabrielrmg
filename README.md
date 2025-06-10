@@ -82,58 +82,48 @@ Clique na imagem acima para acesso ao link, ou  se preferir um link simples:
 
 ```mermaid
 flowchart TD
-  %% ───────── INICIALIZAÇÃO ─────────
-  A["🚀 INÍCIO<br/>main()"] --> B["📡 Inicializar Sistema<br/>stdio_init_all()"]
-  B --> C["⏳ Aguardar USB<br/>stdio_usb_connected()"]
-  C --> D["🖥️ Init OLED<br/>i2c_init() + ssd1306_init()"]
+  A["🚀 INÍCIO main()"] --> B["📡 Inicializar Sistema stdio_init_all()"]
+  B --> C["⏳ Aguardar USB stdio_usb_connected()"]
+  C --> D["🖥️ Init OLED i2c_init() + ssd1306_init()"]
 
-  %% ───────── HARDWARE SETUP ─────────
   D --> E["⚙️ Configurar Hardware"]
-  E --> E1["🔴 Botão A<br/>GP5 + pull-up + IRQ"]
-  E --> E2["🟢 Botão B<br/>GP6 + pull-up + IRQ"]
-  E --> E3["🔴 LED REC<br/>GP13"]
-  E --> E4["🟢 LED PLAY<br/>GP11"]
-  E --> E5["🎤 Microfone<br/>ADC2 @ GP28"]
-  E --> E6["🔊 Buzzer<br/>PWM @ GP10"]
+  E --> E1["🔴 Botão A GP5 + pull-up + IRQ"]
+  E --> E2["🟢 Botão B GP6 + pull-up + IRQ"]
+  E --> E3["🔴 LED REC GP13"]
+  E --> E4["🟢 LED PLAY GP11"]
+  E --> E5["🎤 Microfone ADC2 @ GP28"]
+  E --> E6["🔊 Buzzer PWM @ GP10"]
 
-  %% ───────── LOOP PRINCIPAL ─────────
-  E1 & E2 & E3 & E4 & E5 & E6 --> F["🔄 Loop<br/>while(true)"]
-  F --> G["🖼️ flush_if_ready()"]
+  E1 & E2 & E3 & E4 & E5 & E6 --> F["🔄 Loop while(true)"]
+  F --> G["🖼️ Atualizar Display flush_if_ready()"]
   G --> H{"🎯 switch(state)"}
 
-  %% ───────── TRÊS ESTADOS ─────────
-  H -->|IDLE| I["😴 Idle<br/>tight_loop_contents()"]
-  H -->|REC|  J["🎙️ Gravação"]
-  H -->|PLAY| K["🔊 Reprodução"]
+  H -->|IDLE| I["😴 idle tight_loop_contents()"]
+  H -->|REC| J["🎙️ gravação"]
+  H -->|PLAY| K["🔊 reprodução"]
 
-  %% ───────── GRAVAÇÃO ─────────
   subgraph GRAVAÇÃO
-    J --> JR1["LED Vermelho ON"]
-    JR1 --> JR2["adc_init()"]
-    JR2 --> JR3["Start ADC Timer<br/>16 kHz"]
-    JR3 --> JR4["adc_cb()"]
-    JR4 --> JR5{"wr_i ≥ NUM_SAMPLES?"}
-    JR5 -->|Não| JR4
-    JR5 -->|Sim| JR6["LED Vermelho OFF<br/>rec_done = true"]
-    JR6 --> I
+    J --> J1["🔴 LED ON"]
+    J1 --> J2["adc_init()"]
+    J2 --> J3["Start ADC Timer 16 kHz"]
+    J3 --> J4["adc_cb()"]
+    J4 --> J5{"wr_i ≥ NUM_SAMPLES?"}
+    J5 -->|Não| J4
+    J5 -->|Sim| J6["🔹 LED OFF rec_done=true"]
+    J6 --> I
   end
 
-  %% ───────── REPRODUÇÃO ─────────
   subgraph REPRODUÇÃO
-    K --> KP1["LED Verde ON"]
-    KP1 --> KP2["gpio_set_function()<br/>PWM"]
-    KP2 --> KP3["Configurar PWM<br/>wrap = 255, clkdiv = 1"]
-    KP3 --> KP4["Start PWM Timer<br/>16 kHz"]
-    KP4 --> KP5["pwm_cb()"]
-    KP5 --> KP6{"rd_i ≥ NUM_SAMPLES?"}
-    KP6 -->|Não| KP5
-    KP6 -->|Sim| KP7["LED Verde OFF<br/>play_done = true"]
-    KP7 --> I
+    K --> K1["🟢 LED ON"]
+    K1 --> K2["set PWM Function gpio_set_function()"]
+    K2 --> K3["Configurar PWM wrap=255, clkdiv=1"]
+    K3 --> K4["Start PWM Timer 16 kHz"]
+    K4 --> K5["pwm_cb()"]
+    K5 --> K6{"rd_i ≥ NUM_SAMPLES?"}
+    K6 -->|Não| K5
+    K6 -->|Sim| K7["🔹 LED OFF play_done=true"]
+    K7 --> I
   end
-
-  %% ───────── INTERRUPÇÕES ─────────
-  BTN_A_IRQ[/"IRQ Botão A<br/>btn_isr()"/] -.->|state = REC| J
-  BTN_B_IRQ[/"IRQ Botão B<br/>btn_isr()"/] -.->|state = PLAY| K
 
 ```
 
