@@ -97,6 +97,23 @@ make -j4
 
 ---
 
+## 💭 Reflexão Final
+
+- **Técnicas de programação que podem ser utilizadas para melhorar a gravação e a reprodução do áudio:**  
+  - **DMA + ADC FIFO:** captura as amostras de forma contínua, sem overhead de CPU.  
+  - **PIO + PWM DMA:** gera o sinal de saída exatamente a 16 kHz sem jitter.  
+  - **Buffers circulares (ring buffer):** garante fluxo ininterrupto de dados, evitando under-/overflows.  
+  - **Interrupções e timers hardware:** mantém o timing estritamente preciso para amostragem e reprodução.  
+  - **Filtragem no firmware (média móvel ou passa-baixa):** reduz ruídos de alta frequência antes de armazenar ou tocar.
+
+- **Formas de gravar áudios mais extensos, sem prejudicar a qualidade da gravação:**  
+  - **Stream para memória externa (flash ou cartão SD):** libera a RAM do Pico e permite dezenas de megabytes de armazenamento.  
+  - **Compressão em tempo real (ADPCM, µ-law):** reduz o tamanho das amostras de 12 ou 16 bits para 4–8 bits sem perda perceptível.  
+  - **Gravação em blocos (chunking) com flush imediato:** divide o áudio em páginas e grava cada bloco no meio externo para evitar consumo excessivo de RAM.  
+  - **Driver de sistema de arquivos (FAT) + DMA:** escreve diretamente no cartão SD via DMA, mantendo performance e qualidade de amostragem.
+
+---
+
 ## 📜 Licença
 GNU GPL-3.0.
 
