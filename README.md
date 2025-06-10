@@ -82,74 +82,49 @@ Clique na imagem acima para acesso ao link, ou  se preferir um link simples:
 
 ```mermaid
 flowchart TD
-    A[🚀 INÍCIO<br/>main()] --> B[📡 Inicializar Sistema<br/>stdio_init_all()]
-    B --> C[⏳ Aguardar Conexão USB<br/>stdio_usb_connected()]
-    C --> D[🖥️ Inicializar OLED<br/>init_oled() - I2C 400 kHz]
-    
-    D --> E[⚙️ Configurar Hardware]
-    E --> E1[🔴 Botão A – GP5<br/>Pull-up + IRQ rec]
-    E --> E2[🟢 Botão B – GP6<br/>Pull-up + IRQ play]
-    E --> E3[🔴 LED Vermelho – GP13<br/>Indicador REC]
-    E --> E4[🟢 LED Verde – GP11<br/>Indicador PLAY]
-    E --> E5[🎤 Microfone – GP28<br/>ADC2 canal 2]
-    E --> E6[🔊 Buzzer – GP10<br/>PWM Output]
-    
-    E1 --> F[🔄 LOOP PRINCIPAL<br/>while(state)]
-    E2 --> F
-    E3 --> F
-    E4 --> F
-    E5 --> F
-    E6 --> F
-    
-    F --> G[🖼️ Atualizar Display<br/>flush_if_ready()]
-    G --> H{🎯 switch(state)}
-    
-    H -->|IDLE| I[😴 Aguardar<br/>tight_loop_contents()]
-    H -->|REC| J[🎙️ GRAVAÇÃO]
-    H -->|PLAY| K[🔊 REPRODUÇÃO]
-    
-    subgraph "⚡ Interrupções"
-      INT1[Botão A → btn_isr()<br/>Debounce 200 ms] -.->|state=REC| J
-      INT2[Botão B → btn_isr()<br/>Debounce 200 ms] -.->|state=PLAY| K
-    end
-    
-    subgraph "🔴 GRAVAÇÃO"
-      J --> J1[Acender LED Vermelho]
-      J1 --> J2[ssd1306_clear()]
-      J2 --> J3[adc_init()<br/>adc_gpio_init()]
-      J3 --> J4[Start ADC Timer 16 kHz]
-      J4 --> J5[adc_cb() → Read ADC / Store Buffer / Draw VU]
-      J5 --> J6{wr_i >= NUM_SAMPLES?}
-      J6 -->|Não| J5
-      J6 -->|Sim| J7[rec_done=true]
-      J7 --> J8[Apagar LED Vermelho]
-      J8 --> I
-    end
-    
-    subgraph "🟢 REPRODUÇÃO"
-      K --> K1[Acender LED Verde]
-      K1 --> K2[gpio_set_function(PWM)]
-      K2 --> K3[Configurar PWM wrap=255, clkdiv=1]
-      K3 --> K4[Start PWM Timer 16 kHz]
-      K4 --> K5[pwm_cb() → Read Buffer / PWM / Draw VU]
-      K5 --> K6{rd_i >= NUM_SAMPLES?}
-      K6 -->|Não| K5
-      K6 -->|Sim| K7[play_done=true]
-      K7 --> K8[Apagar LED Verde]
-      K8 --> I
-    end
-    
-    subgraph "📊 VU-METER"
-      VU1[12 Barras – 5 px cada] 
-      VU2[Altura ∝ Amplitude]
-      VU3[Double-buffer → sem flicker]
-    end
-    
-    subgraph "💾 Buffer & Specs"
-      HW1[Buffer RAM 160 kB]
-      HW2[Amostras 16 kHz → 160 000]
-      HW3[12→8 bits mapping]
-    end
+  A["🚀 INÍCIO\nmain()"] --> B["📡 Inicializar Sistema\nstdio_init_all()"]
+  B --> C["⏳ Aguardar USB\nstdio_usb_connected()"]
+  C --> D["🖥️ Init OLED\ni2c_init() + ssd1306_init()"]
+
+  D --> E["⚙️ Configurar Hardware"]
+  E --> E1["🔴 Botão A\nGP5 + pull-up + IRQ"]
+  E --> E2["🟢 Botão B\nGP6 + pull-up + IRQ"]
+  E --> E3["🔴 LED REC\nGP13"]
+  E --> E4["🟢 LED PLAY\nGP11"]
+  E --> E5["🎤 Microfone\nADC2 @ GP28"]
+  E --> E6["🔊 Buzzer\nPWM @ GP10"]
+
+  E1 & E2 & E3 & E4 & E5 & E6 --> F["🔄 Loop\nwhile(true)"]
+  F --> G["🖼️ Atualizar Display\nflush_if_ready()"]
+  G --> H{"🎯 switch(state)"}
+
+  H -->|IDLE| I["😴 idle\ntight_loop_contents()"]
+  H -->|REC| J["🎙️ gravação"]
+  H -->|PLAY| K["🔊 reprodução"]
+
+  subgraph GRAVAÇÃO
+    J --> J1["🔴 LED ON"]
+    J1 --> J2["adc_init()"]
+    J2 --> J3["Start ADC Timer\n16 kHz"]
+    J3 --> J4["adc_cb()"]
+    J4 --> J5{"wr_i ≥ NUM_SAMPLES?"}
+    J5 -->|Não| J4
+    J5 -->|Sim| J6["🔹 LED OFF\nrec_done=true"]
+    J6 --> I
+  end
+
+  subgraph REPRODUÇÃO
+    K --> K1["🟢 LED ON"]
+    K1 --> K2["set PWM Function\ngpio_set_function()"]
+    K2 --> K3["Configurar PWM\nwrap=255, clkdiv=1"]
+    K3 --> K4["Start PWM Timer\n16 kHz"]
+    K4 --> K5["pwm_cb()"]
+    K5 --> K6{"rd_i ≥ NUM_SAMPLES?"}
+    K6 -->|Não| K5
+    K6 -->|Sim| K7["🔹 LED OFF\nplay_done=true"]
+    K7 --> I
+  end
+
 ```
 
 
