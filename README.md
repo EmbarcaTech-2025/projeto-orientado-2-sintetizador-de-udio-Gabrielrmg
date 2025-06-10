@@ -35,7 +35,9 @@ Assista ao protótipo funcionando no YouTube:
 
 [![Veja o demo no YouTube](https://img.youtube.com/vi/sCS0l5j58IU/0.jpg)](https://youtube.com/shorts/sCS0l5j58IU?feature=share)
 
+Clique na imagem acima para acesso ao link, ou  se preferir um link simples:
 
+[▶ Demo no YouTube](https://youtube.com/shorts/sCS0l5j58IU?feature=share)
 
 ---
 
